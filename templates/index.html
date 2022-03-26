@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>Tello</title>
+    <!-- UIkit CSS -->
+    <!-- <link rel="stylesheet" href="/static/css/lib/uikit.min.css" /> -->
+    <link rel="stylesheet" href="/static/css/app.css" />
+    <!-- UIkit JS -->
+    <!-- <script src="/static/js/lib/uikit.min.js"></script>
+    <script src="/static/js/lib/uikit-icons.min.js"></script> -->
+    <script src="/static/js/lib/jquery-3.4.1.min.js"></script>
+</head>
+ 
+<body>
+
+    <!--HEADER-->
+    <header id="top-head">
+        <div class="uk-container uk-container-expand uk-background-primary">
+            <nav class="uk-navbar uk-light">
+                <div class="uk-navbar-left">
+                    <div class="uk-navbar-item">
+                        <a class="uk-logo" href="#"><img class="custom-logo" src="/static/img/drone-icon.png" width="200" /></a>
+                    </div>
+                    <ul class="uk-navbar-nav uk-visible@s">
+                        <li><a>Battery:&nbsp;<span id="battery">-</span></a></li>
+                    </ul>
+                </div>
+                <div class="uk-navbar-right">
+                    <ul class="uk-navbar-nav">
+                        <li><button class="uk-button uk-button-primary" id="connect">Connect</button></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <!--/HEADER-->
+
+    <div class="uk-text-center uk-padding-small" style="width: 100%" uk-grid>
+
+        <div class="uk-width-2-5">
+
+            <div class="uk-padding-small">
+                <button class="uk-button uk-button-primary uk-button-small" id="takeoff">Takeoff</button>
+                <button class="uk-button uk-button-primary uk-button-small" id="land">Land</button>
+                <button class="uk-button uk-button-primary uk-button-small" id="streamon">Stream On</button>
+                <button class="uk-button uk-button-primary uk-button-small" id="streamoff">Stream Off</button>
+            </div>
+
+            <img id="video" src="/static/img/blank_video.png" />
+
+            <div class="uk-padding-small">
+                <button class="uk-button uk-button-primary uk-button-small" id="take_photo">Take Photo</button>
+                <button class="uk-button uk-button-primary uk-button-small" id="record_video">Start Recording</button>
+            </div>
+
+            <div class="uk-flex-center uk-padding" uk-grid>
+                <div class="uk-grid-1-2">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td><button id="fly_up" class="uk-button uk-button-primary uk-text-nowrap uk-button-small" uk-tooltip="title: Fly Up; pos: top">▲</button></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><button id="yaw_left" class="uk-button uk-button-primary uk-text-nowrap uk-button-small" uk-tooltip="title: Yaw Left; pos: left">◀</button></td>
+                                <td></td>
+                                <td><button id="yaw_right" class="uk-button uk-button-primary uk-text-nowrap uk-button-small" uk-tooltip="title: Yaw Right; pos: right">▶</button></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><button id="fly_down" class="uk-button uk-button-primary uk-text-nowrap uk-button-small" uk-tooltip="title: Fly Down; pos: bottom">▼</button></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <input class="uk-range" type="range" value="90" min="5" max="360" step="5" id="yaw_slider" style="width: 150px;" />
+                                    <div>
+                                        Yaw angle: <span id="yaw_angle">90</span>°
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="uk-grid-1-2">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td><button id="fly_forward" class="uk-button uk-button-small uk-button-primary uk-text-nowrap" uk-tooltip="title: Fly Forward; pos: top">▲</button></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><button id="fly_left" class="uk-button uk-button-small uk-button-primary uk-text-nowrap" uk-tooltip="title: Fly Left; pos: left">◀</button></td>
+                                <td></td>
+                                <td><button id="fly_right" class="uk-button uk-button-small uk-button-primary uk-text-nowrap" uk-tooltip="title: Fly Right; pos: right">▶</button></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><button id="fly_backward" class="uk-button uk-button-small uk-button-primary uk-text-nowrap" uk-tooltip="title: Fly Backward; pos: bottom">▼</button></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <input class="uk-range" type="range" value="50" min="10" max="500" step="5" id="distance_slider" style="width: 150px;" />
+                                    <div>
+                                        Distance: <span id="distance">50</span> <span id="display_units">in</span>
+                                    </div>
+                                </td>
+                                </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div>
+                <button class="uk-button uk-button-primary uk-button-small" id="flip_forward">Flip Forward</button>
+                <button class="uk-button uk-button-primary uk-button-small" id="flip_backward">Flip Backward</button>
+                <div>&nbsp;</div>
+                <button class="uk-button uk-button-primary uk-button-small" id="flip_left">Flip Left</button>
+                <button class="uk-button uk-button-primary uk-button-small" id="flip_right">Flip Right</button>
+            </div>
+            
+        </div>
+
+        <!-- <div class="uk-width-3-5" style="position: relative">
+            <iframe src="/droneblocks/tello.html" width="100%" height="100%" id="droneblocks_iframe"></iframe>
+            <button class="uk-button uk-button-danger uk-button-small" type="button" id="pause">Pause Mission</button>
+        </div> -->
+    </div>
+    <script src="../static/js/app.js"></script>
+    <script src="../static/js/keyboard.js"></script>
+    <script src="../static/js/mission.js"></script>
+</body>
+</html>
