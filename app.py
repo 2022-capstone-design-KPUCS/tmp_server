@@ -19,18 +19,17 @@ def main():
 
 @app.route('/send_command', methods=['POST'])
 def send_command():
-    command = request.json['command']
-    response = command
-    return note_repr(response)
-
+  camera = Camera()
+  camera.start_cam()
+  command = request.json['command']
+  response = command
+  return note_repr(response)
 
 if __name__ == '__main__':
   #Initialize drone class
   # drone = Drone()
 
   #camera for stream
-  camera = Camera()
-  camera.start_cam()
   parser = argparse.ArgumentParser(description="Flask API exposing YOLOv5 model")
   parser.add_argument("--port", default=5000, type=int, help="port number")
   args = parser.parse_args()
