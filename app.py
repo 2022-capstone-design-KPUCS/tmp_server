@@ -26,11 +26,11 @@ def send_command():
 
 if __name__ == '__main__':
   #Initialize drone class
-  drone = Drone()
+  # drone = Drone()
 
   #camera for stream
-  camera = Camera(drone)
-
+  camera = Camera()
+  camera.start_cam()
   parser = argparse.ArgumentParser(description="Flask API exposing YOLOv5 model")
   parser.add_argument("--port", default=5000, type=int, help="port number")
   args = parser.parse_args()
