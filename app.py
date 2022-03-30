@@ -25,6 +25,12 @@ def send_command():
   response = command
   return note_repr(response)
 
+@app.route('/get_stream', methods=['GET'])
+def get_stream():
+  camera = Camera()
+  camera.start_cam()
+  return note_repr("streaming")
+
 if __name__ == '__main__':
   #Initialize drone class
   # drone = Drone()
