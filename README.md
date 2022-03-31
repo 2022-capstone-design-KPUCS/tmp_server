@@ -19,3 +19,16 @@
  - [ ] streamoff 기능
  - [ ] tello api 사용하여 방향 및 속도 제어
  - [ ] aws배포
+
+
+### code
+ - NMS(non-maximum suppression) : 성능 향상에 도움이 된다.
+ 현재 픽셀을 기준으로 주변 픽셀과 비교했을 때 최대값인 경우 그대로 놔두고 아닌 경우 제거하는 것. - prediction이후 threshold 가 넘는 같은 클래스의 바운딩 박스들이 합쳐 나옴.
+
+ - agnostic_nms : classification없이 바운딩 박스만 찾고 싶을 때 사용
+
+ - EMA(Exponential Moving Average) : 기존의 moving average보다 최근의 데이터에 가중치를 둔 평균값 - 성능을 안정화 하는 역할. (기본적으로는 활용 안하도록 되어 있다.)
+
+ - stride : 필터를 적용하는 간격. 스트라이드를 크게 하면 출력 데이터의 크기가 작아진다.
+
+ - model에 이미지 입력 : pred형태는 바운딩 박스 위치, Confidence, Class확률 정보
