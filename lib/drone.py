@@ -7,6 +7,8 @@ from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
 import requests
 
+import aws_s3
+
 DEST_URL = ''
 # model env
 MODEL_PATH = 'runs/train/exp4/weights/e50b32.pt'
@@ -34,34 +36,38 @@ class Drone():
     self.me = tello.Tello()
     self.me.connect()
 
-  def send_format(self, type):
+  @staticmethod
+  def send_format(type):
     '''
     0 : fire
     1 : smoke
     '''
     return {'data_type:', type}
   
+  @staticmethod
+  def upload_s3():
+    '''
+    upload img to s3
+    '''
+    s3 = aws_s3.s3_connection()
+    return
+  
+  @classmethod
   def get_drone_battery(self):
     '''
     return drone battery
     '''
     return self.me.get_battery()
   
+  @classmethod
   def move_auto(self):
     '''
     move auto with thread
     not yet
     '''
     return
-  
-  def stream_video(self):
-    '''
-    stream on video
-    '''
-    self.me.stream_on()
-    cap = self.me.get_frame_read()
-    
 
+  @classmethod
   def stream_with_yolo(self):
     self.me.streamon()
     cap = self.me.get_frame_read()
