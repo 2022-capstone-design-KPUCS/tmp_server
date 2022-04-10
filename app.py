@@ -20,20 +20,18 @@ def main():
 @app.route('/send_command', methods=['POST'])
 def send_command():
   camera = Camera()
-  camera.start_cam()
-  command = request.json['command']
-  response = command
-  return note_repr(response)
+  camera.start_detecting()
+  return note_repr("streaming")
 
 @app.route('/get_stream', methods=['GET'])
 def get_stream():
   camera = Camera()
-  camera.start_cam()
+  camera.start_detecting()
   return note_repr("streaming")
 
 if __name__ == '__main__':
   #Initialize drone class
-  # drone = Drone()
+  drone = Drone()
 
   #camera for stream
   parser = argparse.ArgumentParser(description="Flask API exposing YOLOv5 model")
