@@ -8,6 +8,6 @@ RUN git clone https://github.com/sktkddn777/lambda-with-docker-container.git
 
 RUN pip install -r lambda-with-docker-container/requirements.txt
 
-RUN cp lambda-with-docker-container/* /var/task
+RUN cp -r lambda-with-docker-container/* /var/task
 
 CMD ["lambda_function.handler"]
