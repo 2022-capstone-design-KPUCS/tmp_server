@@ -1,15 +1,12 @@
 import boto3
-import os
-
-from decouple import config
 
 def s3_connection():
     try:
         s3 = boto3.client(
             service_name="s3",
-            region_name="ap-northeast-2", # 자신이 설정한 bucket region
-            aws_access_key_id=config("aws_access_key_id"),
-            aws_secret_access_key=config("aws_secret_access_key"),
+            # region_name="ap-northeast-2", # 자신이 설정한 bucket region
+            # aws_access_key_id=config("aws_access_key_id"),
+            # aws_secret_access_key=config("aws_secret_access_key"),
         )
     except Exception as e:
         print(e)
@@ -17,7 +14,7 @@ def s3_connection():
         print("s3 bucket connected!")
         return s3
 
-def s3_put_object(s3, bucket, filepath, access_key):
+def s3_put_object(s3, bucket, filepath):
     """
     s3 bucket에 지정 파일 업로드
     :param s3: 연결된 s3 객체(boto3 client)
@@ -28,10 +25,9 @@ def s3_put_object(s3, bucket, filepath, access_key):
     """
     try:
         s3.upload_file(
-            Filename=filepath,
-            Bucket=bucket,
-            Key=access_key,
-            ExtraArgs={"ContentType": "image/png", "ACL": "public-read"},
+            filepath,
+            bucket,
+            filepath,
         )
     except Exception as e:
         return False
@@ -45,6 +41,17 @@ def s3_get_image_url(s3, filename):
     location = s3.get_bucket_location(Bucket="sangwoha-bucket")["LocationConstraint"]
     return f"https://sangwoha-bucket.s3.{location}.amazonaws.com/{filename}.png"
 
+def s3_get_image(s3, bucket, filename):
+    from PIL import Image
+    response = s3.get_object(Bucket=bucket, Key="test.jpg")
+    print(response)
+
 if __name__ == '__main__':
+  bucket_name = "sangwoha-bucket"
+#   file_name = "0.jpg"
+#   # test img file
+
   s3 = s3_connection()
-  os.system("curl " + s3_get_image_url(s3, "static") + " > test.png")
+  s3_get_image(s3, bucket_name, "test.jpg")
+#   s3_put_object(s3, bucket_name, file_name)
+#   # os.system("curl " + s3_get_image_url(s3, "static") + " > test.png")

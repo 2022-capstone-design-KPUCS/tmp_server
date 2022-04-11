@@ -33,6 +33,7 @@ class Drone():
   function that drone can do
   '''
   def __init__(self):
+    self.s3 = aws_s3.s3_connection()
     self.me = tello.Tello()
     self.me.connect()
 
@@ -44,12 +45,13 @@ class Drone():
     '''
     return {'data_type:', type}
   
-  @staticmethod
-  def upload_s3():
+  @classmethod
+  def upload_s3(self, file_name):
     '''
     upload img to s3
     '''
-    s3 = aws_s3.s3_connection()
+    bucket_name = "sangwoha-bucket"
+    aws_s3.s3_put_object(self.s3, bucket_name, file_name)
     return
   
   @classmethod
@@ -111,6 +113,9 @@ class Drone():
           annotator.box_label([x1, y1, x2, y2], '%s %d' % (class_name, float(p[4]) * 100), color=colors[int(p[5])])
 
       result_img = annotator.result()
+
+      # 이미지 정보를 s3에 보내주기.
+      self.upload_s3(img_input)
 
       cv2.imshow('result', result_img)
 

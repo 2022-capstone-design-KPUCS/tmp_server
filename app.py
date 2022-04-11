@@ -6,6 +6,7 @@ from flask_api import FlaskAPI
 from lib.drone import Drone
 from lib.camera import Camera
 
+
 app = FlaskAPI(__name__)
 
 def note_repr(key):
@@ -31,6 +32,7 @@ if __name__ == '__main__':
   #Initialize drone class
   drone = Drone()
   camera = Camera()
+  
   #camera for stream
   parser = argparse.ArgumentParser(description="Flask API exposing YOLOv5 model")
   parser.add_argument("--port", default=5000, type=int, help="port number")
