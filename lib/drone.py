@@ -2,14 +2,16 @@ import djitellopy as tello
 import torch
 import numpy as np
 import cv2
+import requests
 from utils.datasets import letterbox
 from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
-import requests
+
+from autopilot import make_command
 
 import aws_s3
 
-DEST_URL = ''
+DEST_URL = 'http://localhost:8000/api/v1'
 # model env
 MODEL_PATH = 'runs/train/exp4/weights/e50b32.pt'
 img_size = 416
@@ -33,6 +35,7 @@ class Drone():
   function that drone can do
   '''
   def __init__(self):
+    make_command()
     self.s3 = aws_s3.s3_connection()
     self.me = tello.Tello()
     self.me.connect()
@@ -62,12 +65,33 @@ class Drone():
     return self.me.get_battery()
   
   @classmethod
-  def move_auto(self):
+  def drone_control(self):
     '''
     move auto with thread
-    not yet
+    command in command.txt
     '''
-    return
+    f= open('./command.txt', 'r')
+    command=f.readlines()
+    for i in command:
+        if i == "takeoff\n":
+            self.me.takeoff()
+
+        elif i[:5] =="speed":
+            speed=int(i[6:])
+            self.me.set_speed(speed)
+        elif i[:3] =="ccw":
+            angle=int(i[4:])
+            self.me.rotate_counter_clockwise(angle)
+
+        elif i[:2] =="cw":
+            angle=int(i[3:])
+            self.me.rotate_clockwise(angle)
+        elif i[:7] == "forward":
+            distance=int(i[8:])
+            self.me.move_forward(distance)
+
+        elif i == "land\n":
+            self.me.land()
 
   @classmethod
   def stream_with_yolo(self):
