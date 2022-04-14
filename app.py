@@ -1,39 +1,14 @@
 import argparse
+from flask import Flask
+from flask_restx import Api, Resource
+from drone import Drone
 
-from flask import render_template, request
-from flask_api import FlaskAPI
+app = Flask(__name__)
+api = Api(app)
 
-from lib.drone import Drone
-from lib.camera import Camera
-
-
-app = FlaskAPI(__name__)
-
-def note_repr(key):
-    return {
-        'text': key
-    }
-
-@app.route('/', methods=['GET'])
-def main():
-  return render_template('index.html')
-
-@app.route('/send_command', methods=['POST'])
-def send_command():
-  camera.start_detecting()
-  return note_repr("streaming")
-
-@app.route('/get_stream', methods=['GET'])
-def get_stream():
-  camera.start_detecting()
-  return note_repr("streaming")
+api.add_namespace(Drone, '/drone')
 
 if __name__ == '__main__':
-  #Initialize drone class
-  drone = Drone()
-  camera = Camera()
-  
-  #camera for stream
   parser = argparse.ArgumentParser(description="Flask API exposing YOLOv5 model")
   parser.add_argument("--port", default=5000, type=int, help="port number")
   args = parser.parse_args()
