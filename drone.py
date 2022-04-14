@@ -46,11 +46,11 @@ class Tello(Resource):
     }, 200
 
 
-@Drone.route('/<int:drone_id>/detect')
+@Drone.route('/<string:drone_id>/detect')
 class TelloMission(Resource):
   def get(self, drone_id):
     global drone_dict
-
+    print("COMEONE")
     drone = drone_dict[drone_id]
     stream = Thread(target=detect_fire(drone))
     stream.start()
