@@ -89,4 +89,4 @@ def detect_fire(object):
     result_img = annotator.result()
     cv2.imshow('result', result_img)
 
-    cap.release()
+  cap.release()

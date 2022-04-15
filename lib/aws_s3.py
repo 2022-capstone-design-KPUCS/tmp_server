@@ -42,16 +42,11 @@ def s3_get_image_url(s3, filename):
     return f"https://sangwoha-bucket.s3.{location}.amazonaws.com/{filename}.png"
 
 def s3_get_image(s3, bucket, filename):
-    from PIL import Image
     response = s3.get_object(Bucket=bucket, Key="test.jpg")
     print(response)
 
 if __name__ == '__main__':
   bucket_name = "sangwoha-bucket"
-#   file_name = "0.jpg"
-#   # test img file
-
   s3 = s3_connection()
-  s3_get_image(s3, bucket_name, "test.jpg")
 #   s3_put_object(s3, bucket_name, file_name)
 #   # os.system("curl " + s3_get_image_url(s3, "static") + " > test.png")
