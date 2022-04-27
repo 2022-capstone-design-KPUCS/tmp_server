@@ -2,8 +2,8 @@ from flask import jsonify, request
 from flask_restx import Resource, Namespace
 
 import lib.autopilot as ap
-from lib.tello import init_drone, drone_control, detect_fire
-from lib.detect import detect_and_move
+from lib.tello import init_drone, detect_fire, drone_control
+from threading import Thread
 
 Drone = Namespace('Drone')
 
@@ -51,7 +51,10 @@ class TelloMission(Resource):
   def get(self, drone_id):
     global drone_dict
     drone = drone_dict[drone_id]
-    detect_and_move(drone)
+    stream = Thread(detect_fire(drone))
+    stream.start()
+    drone_control(drone)
+    stream.join()
 
     return {
       "drone_id": drone_id

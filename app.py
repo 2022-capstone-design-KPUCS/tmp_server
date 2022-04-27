@@ -1,6 +1,6 @@
 import argparse
 from flask import Flask
-from flask_restx import Api, Resource
+from flask_restx import Api
 from drone import Drone
 
 app = Flask(__name__)
