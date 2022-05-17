@@ -9,8 +9,7 @@ from utils.plots import Annotator
 from utils.fcm import send_message
 
 
-
-testVar = 0
+isFireDetected = False
 
 MODEL_PATH = 'runs/train/exp4/weights/e50b32.pt'
 img_size = 416
@@ -29,96 +28,110 @@ colors = ((0, 255, 0))
 
 
 def init_drone():
-  drone = tello.Tello()
-  drone.connect()
-  return drone
+    drone = tello.Tello()
+    drone.connect()
+    return drone
+
 
 def drone_control(object):
-  global testVar
-  print("hi")
-  import time
+    global testVar
+    print("hi")
+    import time
 
-  n = 0
-  while n < 10:
-    print("drone_control",testVar)
-    if testVar == 1:
-      print("WOW~~")
-    print(n)
-    n += 1
-    time.sleep(2)
-  # f= open('./command.txt', 'r')
-  # command=f.readlines()
-  # for i in command:
-  #     if i == "takeoff\n":
-  #         object.takeoff()
+    n = 0
+    while n < 10:
+        print("drone_control", testVar)
+        if testVar == 1:
+            print("WOW~~")
+        print(n)
+        n += 1
+        time.sleep(2)
+    f = open('./command.txt', 'r')
+    command = f.readlines()
+    while command and not isFireDetected:
+        i = command.pop()
+        if i == "takeoff\n":
+            object.takeoff()
 
-  #     elif i[:5] =="speed":
-  #         speed=int(i[6:])
-  #         object.set_speed(speed)
+        elif i[:5] == "speed":
+            speed = int(i[6:])
+            object.set_speed(speed)
 
-  #     elif i[:3] =="ccw":
-  #         angle=int(i[4:])
-  #         object.rotate_counter_clockwise(angle)
+        elif i[:3] == "ccw":
+            angle = int(i[4:])
+            object.rotate_counter_clockwise(angle)
 
-  #     elif i[:2] =="cw":
-  #         angle=int(i[3:])
-  #         object.rotate_clockwise(angle)
+        elif i[:2] == "cw":
+            angle = int(i[3:])
+            object.rotate_clockwise(angle)
 
-  #     elif i[:7] == "forward":
-  #         distance=int(i[8:])
-  #         object.move_forward(distance)
+        elif i[:7] == "forward":
+            distance = int(i[8:])
+            object.move_forward(distance)
 
-  #     elif i == "land\n":
-  #         object.land()
+        elif i == "land\n":
+            object.land()
+
+
+def stop_flight(object):
+    print("Stopping Flight due to fire detection.")
+    object.send_control_command('stop')
 
 
 def detect_fire(object):
-  object.streamon()
-  cap = object.get_frame_read()
-  cv2.namedWindow("preview", cv2.WINDOW_NORMAL)
-  while True:
-    if cv2.waitKey(1) == ord('q'):
-      break
-    # img = cap.frame
-    s, img = cap.read()
+    object.streamon()
+    cap = object.get_frame_read()
+    cv2.namedWindow("preview", cv2.WINDOW_NORMAL)
+    while True:
+        if cv2.waitKey(1) == ord('q'):
+            break
+        # img = cap.frame
+        s, img = cap.read()
 
-    # preprocess
-    img_input = letterbox(img, img_size, stride=stride)[0] # padding
-    img_input = img_input.transpose((2, 0, 1))[::-1] # BGR to RGB
-    img_input = np.ascontiguousarray(img_input) 
-    img_input = torch.from_numpy(img_input).to(device) # torch Tensor형식 변환
-    img_input = img_input.float()
-    img_input /= 255.
-    img_input = img_input.unsqueeze(0)
+        # preprocess
+        img_input = letterbox(img, img_size, stride=stride)[0]  # padding
+        img_input = img_input.transpose((2, 0, 1))[::-1]  # BGR to RGB
+        img_input = np.ascontiguousarray(img_input)
+        img_input = torch.from_numpy(img_input).to(device)  # torch Tensor형식 변환
+        img_input = img_input.float()
+        img_input /= 255.
+        img_input = img_input.unsqueeze(0)
 
-    # inference
-    pred = model(img_input, augment=False, visualize=False)[0]
+        # inference
+        pred = model(img_input, augment=False, visualize=False)[0]
 
-    # postprocess
-    pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)[0]
-    pred = pred.cpu().numpy()
-    pred[:, :4] = scale_coords(img_input.shape[2:], pred[:, :4], img.shape).round() # img size에 맞게 rescailing
-    annotator = Annotator(img.copy(), line_width=3, example=str(class_names), font='data/malgun.ttf')
+        # postprocess
+        pred = non_max_suppression(
+            pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)[0]
+        pred = pred.cpu().numpy()
+        # img size에 맞게 rescailing
+        pred[:, :4] = scale_coords(
+            img_input.shape[2:], pred[:, :4], img.shape).round()
+        annotator = Annotator(img.copy(), line_width=3, example=str(
+            class_names), font='data/malgun.ttf')
 
-    for p in pred:
-        class_name = class_names[int(p[5])]
-        """ 화재 감지 시 사용자에게 알림 문자 """
-        if class_name == 1: send_message("fire")
-        elif class_name == 2: send_message("smoke")
-        
-        x1, y1, x2, y2 = p[:4]
-        annotator.box_label([x1, y1, x2, y2], '%s %d' % (class_name, float(p[4]) * 100), color=colors[int(p[5])])
+        for p in pred:
+            class_name = class_names[int(p[5])]
+            """ 화재 감지 시 사용자에게 알림 문자 """
+            if int(p[5]) == 1:
+                send_message("fire")
+            elif int(p[5]) == 2:
+                send_message("smoke")
 
-        if int(p[5]) == 0:
-          print("detect_fire: ",testVar)
-          print("fire detect!!")
-          testVar = 1
-    result_img = annotator.result()
+            x1, y1, x2, y2 = p[:4]
+            annotator.box_label([x1, y1, x2, y2], '%s %d' % (
+                class_name, float(p[4]) * 100), color=colors[int(p[5])])
 
-    ret, buffer = cv2.imencode('.jpg', result_img)
-    frame = buffer.tobytes()
-    yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-    # cv2.imshow('result', result_img)
+            if int(p[5]) > 0:
+                isFireDetected = True
+                stop_flight(object)
+                print("Fire Detected: ", isFireDetected)
+        result_img = annotator.result()
 
-  cap.release()
+        ret, buffer = cv2.imencode('.jpg', result_img)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        # cv2.imshow('result', result_img)
+
+    cap.release()
