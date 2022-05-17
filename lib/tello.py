@@ -2,9 +2,12 @@ import djitellopy as tello
 import torch
 import numpy as np
 import cv2
+import threading
 from utils.datasets import letterbox
 from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
+from utils.fcm import send_message
+
 
 
 MODEL_PATH = 'runs/train/exp4/weights/e50b32.pt'
@@ -58,6 +61,7 @@ def drone_control(object):
 def detect_fire(object):
   object.streamon()
   cap = object.get_frame_read()
+  cv2.namedWindow("preview", cv2.WINDOW_NORMAL)
   while True:
     if cv2.waitKey(1) == ord('q'):
       break
@@ -83,10 +87,16 @@ def detect_fire(object):
 
     for p in pred:
         class_name = class_names[int(p[5])]
+        """ 화재 감지 시 사용자에게 알림 문자 """
+        if class_name == 1: send_message("fire")
+        elif class_name == 2: send_message("smoke")
+        
         x1, y1, x2, y2 = p[:4]
         annotator.box_label([x1, y1, x2, y2], '%s %d' % (class_name, float(p[4]) * 100), color=colors[int(p[5])])
-
+    
     result_img = annotator.result()
     cv2.imshow('result', result_img)
+    cap.release()
+    cv2.destroyAllWindows()
 
   cap.release()
