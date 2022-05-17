@@ -7,6 +7,8 @@ from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
 
 
+testVar = 0
+
 MODEL_PATH = 'runs/train/exp4/weights/e50b32.pt'
 img_size = 416
 conf_thres = 0.5
@@ -29,39 +31,55 @@ def init_drone():
   return drone
 
 def drone_control(object):
-  f= open('./command.txt', 'r')
-  command=f.readlines()
-  for i in command:
-      if i == "takeoff\n":
-          object.takeoff()
+  global testVar
+  print("hi")
+  import time
 
-      elif i[:5] =="speed":
-          speed=int(i[6:])
-          object.set_speed(speed)
+  n = 0
+  while n < 10:
+    print("drone_control",testVar)
+    if testVar == 1:
+      print("WOW~~")
+    print(n)
+    n += 1
+    time.sleep(2)
+  # f= open('./command.txt', 'r')
+  # command=f.readlines()
+  # for i in command:
+  #     if i == "takeoff\n":
+  #         object.takeoff()
 
-      elif i[:3] =="ccw":
-          angle=int(i[4:])
-          object.rotate_counter_clockwise(angle)
+  #     elif i[:5] =="speed":
+  #         speed=int(i[6:])
+  #         object.set_speed(speed)
 
-      elif i[:2] =="cw":
-          angle=int(i[3:])
-          object.rotate_clockwise(angle)
+  #     elif i[:3] =="ccw":
+  #         angle=int(i[4:])
+  #         object.rotate_counter_clockwise(angle)
 
-      elif i[:7] == "forward":
-          distance=int(i[8:])
-          object.move_forward(distance)
+  #     elif i[:2] =="cw":
+  #         angle=int(i[3:])
+  #         object.rotate_clockwise(angle)
 
-      elif i == "land\n":
-          object.land()
+  #     elif i[:7] == "forward":
+  #         distance=int(i[8:])
+  #         object.move_forward(distance)
+
+  #     elif i == "land\n":
+  #         object.land()
 
 
 def detect_fire(object):
-  object.streamon()
-  cap = object.get_frame_read()
+  global testVar
+  # object.streamon()
+  # cap = object.get_frame_read()
+  cap = cv2.VideoCapture(0)
+  
   while True:
     if cv2.waitKey(1) == ord('q'):
       break
-    img = cap.frame
+    # img = cap.frame
+    s, img = cap.read()
 
     # preprocess
     img_input = letterbox(img, img_size, stride=stride)[0] # padding
@@ -85,8 +103,16 @@ def detect_fire(object):
         class_name = class_names[int(p[5])]
         x1, y1, x2, y2 = p[:4]
         annotator.box_label([x1, y1, x2, y2], '%s %d' % (class_name, float(p[4]) * 100), color=colors[int(p[5])])
-
+        if int(p[5]) == 0:
+          print("detect_fire: ",testVar)
+          print("fire detect!!")
+          testVar = 1
     result_img = annotator.result()
-    cv2.imshow('result', result_img)
+
+    ret, buffer = cv2.imencode('.jpg', result_img)
+    frame = buffer.tobytes()
+    yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    # cv2.imshow('result', result_img)
 
   cap.release()
