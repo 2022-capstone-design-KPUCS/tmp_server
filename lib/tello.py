@@ -7,6 +7,7 @@ from utils.datasets import letterbox
 from utils.general import non_max_suppression, scale_coords
 from utils.plots import Annotator
 from utils.fcm import send_message
+import threading
 
 
 isFireDetected = False
@@ -69,6 +70,8 @@ def detect_fire(object):
     object.streamon()
     cap = object.get_frame_read()
     cv2.namedWindow("preview", cv2.WINDOW_NORMAL)
+    t1=threading.Thread(target=drone_control,args=(object,))
+    t1.start()
     while True:
         if cv2.waitKey(1) == ord('q'):
             break
