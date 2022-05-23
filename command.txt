@@ -1,6 +1,10 @@
 command
 takeoff
-forward 50
-ccw 30
-forward 50
+speed 20
+ccw 51
+forward 118
+cw 89
+forward 192
+ccw 87
+forward 300
 land

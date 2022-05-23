@@ -9,6 +9,7 @@ distance=[]
 angle=[]
 diff_angle=[]
 
+
 def cal_distance(s_lat,s_long,g_lat,g_long):
     start=(float(s_lat),float(s_long))
     goal=(float(g_lat),float(g_long))

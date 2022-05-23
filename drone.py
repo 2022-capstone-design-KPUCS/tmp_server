@@ -2,6 +2,7 @@ from flask_restx import Resource, Namespace
 from flask import Response
 import lib.autopilot as ap
 from lib.tello import init_drone, detect_fire, drone_control
+from lib.autopilot import make_command,distance
 from threading import Thread
 from multiprocessing import Process
 
@@ -9,10 +10,10 @@ from multiprocessing import Process
 Drone = Namespace('Drone')
 drone = init_drone()
 
-@Drone.route('/control')
-class TelloControl(Resource):
+@Drone.route('/autopilot')
+class AutoPilot(Resource):
   def get(self):
-    drone_control(drone)
+    make_command(distance)
 
 @Drone.route('/detect')
 class TelloDetect(Resource):
