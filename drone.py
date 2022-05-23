@@ -7,8 +7,7 @@ from multiprocessing import Process
 
 
 Drone = Namespace('Drone')
-#drone = init_drone()
-drone = 'drone'
+drone = init_drone()
 
 @Drone.route('/control')
 class TelloControl(Resource):

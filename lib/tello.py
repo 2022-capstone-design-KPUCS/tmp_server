@@ -34,22 +34,9 @@ def init_drone():
 
 
 def drone_control(object):
-    global testVar
-    print("hi")
-    import time
-
-    n = 0
-    while n < 10:
-        print("drone_control", testVar)
-        if testVar == 1:
-            print("WOW~~")
-        print(n)
-        n += 1
-        time.sleep(2)
     f = open('./command.txt', 'r')
     command = f.readlines()
-    while command and not isFireDetected:
-        i = command.pop()
+    for i in command:
         if i == "takeoff\n":
             object.takeoff()
 
@@ -85,8 +72,8 @@ def detect_fire(object):
     while True:
         if cv2.waitKey(1) == ord('q'):
             break
-        # img = cap.frame
-        s, img = cap.read()
+        img = cap.frame
+        
 
         # preprocess
         img_input = letterbox(img, img_size, stride=stride)[0]  # padding

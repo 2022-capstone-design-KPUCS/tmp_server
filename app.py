@@ -8,7 +8,7 @@ app = Flask(__name__)
 api = Api(app)
 
 api.add_namespace(Drone, '/drone')
-api.add_namespace(Notification, '/notification')
+#api.add_namespace(Notification, '/notification')
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="Flask API exposing YOLOv5 model")
@@ -16,4 +16,3 @@ if __name__ == '__main__':
   args = parser.parse_args()
   app.run(host="0.0.0.0", port=args.port)
 
-  #hh

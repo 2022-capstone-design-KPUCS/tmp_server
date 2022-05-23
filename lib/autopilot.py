@@ -49,7 +49,7 @@ def cal_f_angle():
         diff_angle.append(angle[i+1]-angle[i])
         print(diff_angle)
 
-def command(speed):
+def command(speed,distance):
     f=open("./command.txt",'w')
     angle_command=[]
     distance_command=[]
@@ -88,7 +88,7 @@ def command(speed):
     f.close()
 
 
-def make_command():
+def make_command(distance):
     for i in range(len(gps)-1):
         distance.append(cal_distance(gps[i][0], gps[i][1], gps[i+1][0], gps[i+1][1]))
         angle.append(cal_angle(gps[i][0], gps[i][1], gps[i+1][0], gps[i+1][1]))
@@ -97,4 +97,7 @@ def make_command():
     maxDistance=max_distance(distance)
     distance=cal_demo_size(300,maxDistance,distance)
     cal_f_angle()
-    command(20)
+    command(20,distance)
+
+if __name__=='__main__':
+    make_command(distance)
