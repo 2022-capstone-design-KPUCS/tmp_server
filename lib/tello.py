@@ -27,6 +27,7 @@ class_names = ['fire']
 stride = int(model.stride.max())
 colors = ((0, 255, 0))
 
+Fire=False
 
 def init_drone():
     drone = tello.Tello()
@@ -38,6 +39,9 @@ def drone_control(object):
     f = open('./command.txt', 'r')
     command = f.readlines()
     for i in command:
+        if Fire==True:
+            stop_flight(object)    
+            break
         if i == "takeoff\n":
             object.takeoff()
 
@@ -64,6 +68,7 @@ def drone_control(object):
 def stop_flight(object):
     print("Stopping Flight due to fire detection.")
     object.send_control_command('stop')
+    
 
 
 def detect_fire(object):
@@ -99,14 +104,18 @@ def detect_fire(object):
             img_input.shape[2:], pred[:, :4], img.shape).round()
         annotator = Annotator(img.copy(), line_width=3, example=str(
             class_names), font='data/malgun.ttf')
-
+        #print(pred)
         for p in pred:
             class_name = class_names[int(p[5])]
             """ 화재 감지 시 사용자에게 알림 문자 """
-            if int(p[5]) == 1:
-                send_message("fire")
+            if int(p[5]) == 0:
+                # send_message("fire")
+                global Fire
+                Fire=True
             elif int(p[5]) == 2:
                 send_message("smoke")
+            
+            print(p[5])
 
             x1, y1, x2, y2 = p[:4]
             annotator.box_label([x1, y1, x2, y2], '%s %d' % (
@@ -120,8 +129,7 @@ def detect_fire(object):
 
         ret, buffer = cv2.imencode('.jpg', result_img)
         frame = buffer.tobytes()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
         # cv2.imshow('result', result_img)
 
     cap.release()
