@@ -67,6 +67,7 @@ def drone_control(object):
 
 def stop_flight(object):
     print("Stopping Flight due to fire detection.")
+    send_message("Fire")
     object.send_control_command('stop')
     
 
@@ -109,12 +110,7 @@ def detect_fire(object):
             class_name = class_names[int(p[5])]
             """ 화재 감지 시 사용자에게 알림 문자 """
             if int(p[5]) == 0:
-                # send_message("fire")
                 global Fire
-                Fire=True
-            elif int(p[5]) == 2:
-                send_message("smoke")
-            
             print(p[5])
 
             x1, y1, x2, y2 = p[:4]

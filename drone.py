@@ -10,6 +10,7 @@ from multiprocessing import Process
 Drone = Namespace('Drone')
 drone = init_drone()
 
+
 @Drone.route('/autopilot')
 class AutoPilot(Resource):
   def get(self):
