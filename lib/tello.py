@@ -67,7 +67,7 @@ def drone_control(object):
 
 def stop_flight(object):
     print("Stopping Flight due to fire detection.")
-    send_message("Fire")
+    send_message("화재가 발생하였습니다.")
     object.send_control_command('stop')
     
 
