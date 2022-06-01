@@ -4,11 +4,11 @@ from urllib.parse import urljoin
 from utils.login import get_token
 
 def get_route():
-    username, password = map(str, input("Please Enter admin ID: ").split())
+    # username, password = map(str, input("Please Enter admin ID: ").split())
     post = "http://ec2-3-38-108-184.ap-northeast-2.compute.amazonaws.com:8000/auth/token/login/"
     data = {
-        "username": username,
-        "password": password
+        "username": "seanhong2000",
+        "password": "Suskyssc2"
     }
     res = requests.post(post, data=data)
     auth_token = json.loads(res.text)["auth_token"]

@@ -1,8 +1,8 @@
 command
 takeoff
 speed 20
-cw 180
-forward 100
-ccw 180
-forward 100
+ccw 147
+forward 94
+ccw 87
+forward 300
 land

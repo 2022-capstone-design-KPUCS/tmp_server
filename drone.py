@@ -10,10 +10,10 @@ from multiprocessing import Process
 Drone = Namespace('Drone')
 drone = init_drone()
 
-@Drone.route('test')
-class test(Resource):
-  def get(self):
-    stop_flight()
+# @Drone.route('test')
+# class test(Resource):
+#   def get(self):
+#     stop_flight()
 
 @Drone.route('/autopilot')
 class AutoPilot(Resource):

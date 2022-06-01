@@ -38,11 +38,12 @@ def init_drone():
 
 
 def drone_control(object):
+    count=0
     f = open('./command.txt', 'r')
     command = f.readlines()
     for i in command:
         if Fire==True:
-            stop_flight(object)    
+            stop_flight(object,count)    
             break
         if i == "takeoff\n":
             object.takeoff()
@@ -54,11 +55,12 @@ def drone_control(object):
         elif i[:3] == "ccw":
             angle = int(i[4:])
             object.rotate_counter_clockwise(angle)
+            count+=1
 
         elif i[:2] == "cw":
             angle = int(i[3:])
             object.rotate_clockwise(angle)
-
+            count+=1
         elif i[:7] == "forward":
             distance = int(i[8:])
             object.move_forward(distance)
@@ -67,8 +69,8 @@ def drone_control(object):
             object.land()
 
 
-def stop_flight(object):
-    send_message("Fire")
+def stop_flight(object,count):
+    send_message("Fire",count)
     object.send_control_command('stop')
     
 
