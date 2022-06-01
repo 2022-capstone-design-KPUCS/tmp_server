@@ -1,3 +1,4 @@
+from pickle import TRUE
 import djitellopy as tello
 import torch
 import numpy as np
@@ -10,6 +11,7 @@ from utils.fcm import send_message
 import threading
 
 
+Fire=False
 isFireDetected = False
 
 MODEL_PATH = 'runs/train/exp4/weights/e50b32.pt'
@@ -66,8 +68,7 @@ def drone_control(object):
 
 
 def stop_flight(object):
-    print("Stopping Flight due to fire detection.")
-    send_message("화재가 발생하였습니다.")
+    send_message("Fire")
     object.send_control_command('stop')
     
 
@@ -111,16 +112,17 @@ def detect_fire(object):
             """ 화재 감지 시 사용자에게 알림 문자 """
             if int(p[5]) == 0:
                 global Fire
+                Fire=True
             print(p[5])
 
             x1, y1, x2, y2 = p[:4]
             annotator.box_label([x1, y1, x2, y2], '%s %d' % (
                 class_name, float(p[4]) * 100), color=colors[int(p[5])])
 
-            if int(p[5]) > 0:
-                isFireDetected = True
-                stop_flight(object)
-                print("Fire Detected: ", isFireDetected)
+            # if int(p[5]) > 0:
+            #     isFireDetected = True
+            #     stop_flight(object)
+            #     print("Fire Detected: ", isFireDetected)
         result_img = annotator.result()
 
         ret, buffer = cv2.imencode('.jpg', result_img)
