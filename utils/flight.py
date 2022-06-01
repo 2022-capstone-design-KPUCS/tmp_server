@@ -1,7 +1,6 @@
 import requests
 import json
 from urllib.parse import urljoin
-from utils.login import get_token
 
 def get_route():
     # username, password = map(str, input("Please Enter admin ID: ").split())

@@ -17,4 +17,4 @@ def get_token(username, password):
     results = json.loads(res.text)["results"]
     for res in results:
         if res["auth_token"] == auth_token:
-            return res["token"]
+            return res["token"], auth_token
